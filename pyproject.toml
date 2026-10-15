@@ -1,5 +1,5 @@
 [project]
-name = "ats-mini"
+name = "ats-neo"
 version = "0.00"
 requires-python = ">=3.12"
 
@@ -16,7 +16,7 @@ dependencies = [
 required-version = ">=0.6.8"
 
 [tool.towncrier]
-name = "ATS Mini"
+name = "ATS Neo"
 filename = "CHANGELOG.md"
 template = "changelog/.template.jinja"
 directory = "changelog/"

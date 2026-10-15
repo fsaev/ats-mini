@@ -1,4 +1,4 @@
-menu "ATS-Mini"
+menu "ATS-Neo"
 
     choice ATS_BOARD
         prompt "Hardware variant"

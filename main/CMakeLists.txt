@@ -1,6 +1,6 @@
 idf_component_register(
     SRCS
-        "ats-mini.cpp"
+        "ats-neo.cpp"
         "About.cpp"
         "Battery.cpp"
         "BleCentral.cpp"

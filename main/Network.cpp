@@ -312,7 +312,7 @@ void netInit(uint8_t netMode, bool showStatus)
 
     drawScreen(
       (std::string("Use Access Point ") + apSSID).c_str(),
-      ("IP : " + ip + " or atsmini.local").c_str()
+      ("IP : " + ip + " or atsneo.local").c_str()
     );
 
     if(showStatus) delayMs(2000);
@@ -362,7 +362,7 @@ void netInit(uint8_t netMode, bool showStatus)
     if(mdns_init()==ESP_OK)
     {
       mdnsUp = true;
-      mdns_hostname_set("atsmini"); // Set the hostname to "atsmini.local"
+      mdns_hostname_set("atsneo"); // Set the hostname to "atsneo.local"
       mdns_service_add(NULL, "_http", "_tcp", 80, NULL, 0);
     }
     else
@@ -779,7 +779,7 @@ static bool wifiConnect()
     // WiFi connection succeeded
     drawScreen(
       ("Connected to WiFi network (" + ssid + ")").c_str(),
-      ("IP : " + ip + " or atsmini.local").c_str()
+      ("IP : " + ip + " or atsneo.local").c_str()
     );
     // Done
     return(true);
@@ -1269,7 +1269,7 @@ static std::string webPage(const std::string &body)
 "<HEAD>"
   "<META CHARSET='UTF-8'>"
   "<META NAME='viewport' CONTENT='width=device-width, initial-scale=1.0'>"
-  "<TITLE>ATS-Mini Config</TITLE>"
+  "<TITLE>ATS Neo Config</TITLE>"
   "<STYLE>";
   page += webStyleSheet();
   page +=
@@ -1340,7 +1340,7 @@ static std::string webRadioPage()
   ssid = htmlEscape(ssid);
 
   return webPage(
-std::string("<H1>ATS-Mini Pocket Receiver</H1>"
+std::string("<H1>ATS Neo Pocket Receiver</H1>"
 "<P ALIGN='CENTER'>"
   "<A HREF='/memory'>Memory</A>&nbsp;|&nbsp;<A HREF='/config'>Config</A>"
 "</P>"
@@ -1402,7 +1402,7 @@ static std::string webMemoryPage()
   }
 
   return webPage(
-std::string("<H1>ATS-Mini Pocket Receiver Memory</H1>"
+std::string("<H1>ATS Neo Pocket Receiver Memory</H1>"
 "<P ALIGN='CENTER'>"
   "<A HREF='/'>Status</A>&nbsp;|&nbsp;<A HREF='/config'>Config</A>"
 "</P>"
@@ -1425,7 +1425,7 @@ static std::string webConfigPage()
   np.end();
 
   return webPage(
-std::string("<H1>ATS-Mini Config</H1>"
+std::string("<H1>ATS Neo Config</H1>"
 "<P ALIGN='CENTER'>"
   "<A HREF='/'>Status</A>"
   "&nbsp;|&nbsp;<A HREF='/memory'>Memory</A>"

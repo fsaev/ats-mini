@@ -92,7 +92,7 @@ jobs:
             -B build/${{ matrix.board.artifact-suffix }}
             -D SDKCONFIG=build/${{ matrix.board.artifact-suffix }}/sdkconfig
             -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.${{ matrix.board.defaults-suffix || matrix.board.artifact-suffix }}"
-            merge-bin -o ats-mini.merged.bin
+            merge-bin -o ats-neo.merged.bin
 
       - name: Install uv and python
         uses: astral-sh/setup-uv@v8.1.0
@@ -108,14 +108,14 @@ jobs:
 
       - name: Prepare compiled artifact
         run: |
-          mkdir -p artifact/ats-mini-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}
+          mkdir -p artifact/ats-neo-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}
           BUILD="build/${{ matrix.board.artifact-suffix }}"
-          DEST="artifact/ats-mini-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}"
-          cp "$BUILD/bootloader/bootloader.bin" "$DEST/ats-mini.bootloader.bin"
-          cp "$BUILD/partition_table/partition-table.bin" "$DEST/ats-mini.partitions.bin"
-          cp "$BUILD/ats-mini.bin" "$DEST/ats-mini.bin"
-          cp "$BUILD/ats-mini.merged.bin" "$DEST/ats-mini.merged.bin"
-          cp CHANGELOG.md artifact/ats-mini-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}/
+          DEST="artifact/ats-neo-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}"
+          cp "$BUILD/bootloader/bootloader.bin" "$DEST/ats-neo.bootloader.bin"
+          cp "$BUILD/partition_table/partition-table.bin" "$DEST/ats-neo.partitions.bin"
+          cp "$BUILD/ats-neo.bin" "$DEST/ats-neo.bin"
+          cp "$BUILD/ats-neo.merged.bin" "$DEST/ats-neo.merged.bin"
+          cp CHANGELOG.md artifact/ats-neo-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}/
 
       - name: Upload compiled artifact
         uses: actions/upload-artifact@v7
@@ -136,7 +136,7 @@ jobs:
       - name: Download the build artifacts
         uses: actions/download-artifact@v8
         with:
-          pattern: 'ats-mini-*'
+          pattern: 'ats-neo-*'
           merge-multiple: true
           path: artifact
       - name: Archive the build artifacts
@@ -146,7 +146,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           SLUG: ${{ needs.build.outputs.slug }}
         run: >-
-          python -c 'import os,re; t=open(f"""artifact/ats-mini-{os.environ["SLUG"]}-ospi/CHANGELOG.md""").read(); r=re.search(f"""(^## {os.environ["SLUG"][1:].replace(".", "\\.")} .*?)(?=^## \\d|\\Z)""", t, re.MULTILINE | re.DOTALL); print(r.group(0) if r else "")' |
+          python -c 'import os,re; t=open(f"""artifact/ats-neo-{os.environ["SLUG"]}-ospi/CHANGELOG.md""").read(); r=re.search(f"""(^## {os.environ["SLUG"][1:].replace(".", "\\.")} .*?)(?=^## \\d|\\Z)""", t, re.MULTILINE | re.DOTALL); print(r.group(0) if r else "")' |
           gh release create "$SLUG" --repo '${{ github.repository }}' --notes-file -
       - name: Upload release artifacts
         env:

@@ -210,7 +210,7 @@ bool clickFreq(bool shortPress);
 uint8_t doAbout(int16_t enc);
 bool consumeAbortPending();
 
-// ats-mini.cpp
+// ats-neo.cpp
 bool buttonIsPressed();
 void gpioInputPullup(int pin);
 

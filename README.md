@@ -1,8 +1,8 @@
-# ATS Mini
+# ATS Neo
 
 ![](docs/source/_static/esp32-si4732-ui-theme.jpg)
 
-This firmware is for use on the SI4732 (ESP32-S3) Mini/Pocket Receiver
+ATS Neo is an ESP-IDF firmware for the SI4732 (ESP32-S3) Mini/Pocket Receiver (ATS Mini hardware), forked from the [ATS Mini firmware](https://github.com/esp32-si4732/ats-mini).
 
 Based on the following sources:
 

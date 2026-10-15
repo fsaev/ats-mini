@@ -46,7 +46,7 @@ The SI4732 driver (`components/si473x`) is part of the repository.
 
 ## Compile-time options
 
-The options are in the `ATS-Mini` menu of `idf.py menuconfig`. The available options are:
+The options are in the `ATS-Neo` menu of `idf.py menuconfig`. The available options are:
 
 * `ATS_HALF_STEP` - enable encoder half-steps (useful for EC11E encoder)
 * `ATS_FPS_COUNTER` - show the FPS counter

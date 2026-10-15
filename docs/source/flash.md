@@ -21,10 +21,10 @@ The `lilygo-t-embed` variant only works on [LILYGO T-Embed SI4732](hardware.md#l
 A firmware archive contains the following files:
 
 1. `CHANGELOG.md` - a text file that describes what's new in each firmware version
-2. `ats-mini.bootloader.bin` - a bootloader (should be flashed at address **`0x0`**)
-3. `ats-mini.partitions.bin` - a partition table (should be flashed at address **`0x8000`**)
-4. `ats-mini.bin` - a firmware itself (should be flashed at address **`0x10000`**)
-5. `ats-mini.merged.bin` - the three previous files combined into one (should be flashed at address **`0x0`**)
+2. `ats-neo.bootloader.bin` - a bootloader (should be flashed at address **`0x0`**)
+3. `ats-neo.partitions.bin` - a partition table (should be flashed at address **`0x8000`**)
+4. `ats-neo.bin` - a firmware itself (should be flashed at address **`0x10000`**)
+5. `ats-neo.merged.bin` - the three previous files combined into one (should be flashed at address **`0x0`**)
 
 So, you need to flash your receiver using **just one** of the following two ways:
 
@@ -84,10 +84,10 @@ Works on: Windows, macOS, Linux
 3. A new serial port should appear. On Windows check the USB Serial COM port in the Windows Device Manager, on macOS it will look like `/dev/tty.usbmodemXXXX`, on Linux like `/dev/ttyACMX`.
 3. Run **just one** of the two following commands (the first one uses three separate firmware files, the second one uses the single merged firmware file):
    ```shell
-   uvx --from esptool esptool.py --chip esp32s3 --port SERIAL_PORT --baud 921600 --before default-reset --after hard-reset write_flash  -z --flash-mode keep --flash-freq keep --flash-size keep 0x0 ats-mini.bootloader.bin 0x8000 ats-mini.partitions.bin 0x10000 ats-mini.bin
+   uvx --from esptool esptool.py --chip esp32s3 --port SERIAL_PORT --baud 921600 --before default-reset --after hard-reset write_flash  -z --flash-mode keep --flash-freq keep --flash-size keep 0x0 ats-neo.bootloader.bin 0x8000 ats-neo.partitions.bin 0x10000 ats-neo.bin
 
    # OR
 
-   uvx --from esptool esptool.py --chip esp32s3 --port SERIAL_PORT --baud 921600 --before default-reset --after hard-reset write-flash  -z --flash-mode keep --flash-freq keep --flash-size keep 0x0 ats-mini.merged.bin
+   uvx --from esptool esptool.py --chip esp32s3 --port SERIAL_PORT --baud 921600 --before default-reset --after hard-reset write-flash  -z --flash-mode keep --flash-freq keep --flash-size keep 0x0 ats-neo.merged.bin
    ```
 4. Check out the firmware version in Menu -> Settings -> About on the receiver.

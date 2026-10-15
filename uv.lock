@@ -41,7 +41,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ats-mini"
+name = "ats-neo"
 version = "0.0"
 source = { virtual = "." }
 dependencies = [
