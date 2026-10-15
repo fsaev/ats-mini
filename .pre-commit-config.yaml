@@ -24,10 +24,10 @@ repos:
     hooks:
       - id: clang-format
         stages: [manual]
-        files: '.*\.[c|cpp|h|ino]'
+        files: '.*\.[c|cpp|h]'
         args:
           - "--style={BasedOnStyle: llvm, ColumnLimit: 0}"
-        exclude: ats-mini/patch_init.h
+        exclude: main/patch_init.h
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
     hooks:

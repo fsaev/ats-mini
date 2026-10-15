@@ -45,7 +45,7 @@ Example output:
 ```text
 Started general BLE scan
 
-XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX (rssi=-69): ATS-Mini
+XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX (rssi=-69): ATS Neo
 
 Finished general BLE scan
 ```

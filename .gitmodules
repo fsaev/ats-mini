@@ -1,0 +1,15 @@
+[submodule "components/LovyanGFX"]
+	path = components/LovyanGFX
+	url = https://github.com/lovyan03/LovyanGFX.git
+	shallow = true
+[submodule "components/esp_littlefs"]
+	path = components/esp_littlefs
+	url = https://github.com/joltwallet/esp_littlefs.git
+[submodule "components/esp-protocols"]
+	path = components/esp-protocols
+	url = https://github.com/espressif/esp-protocols.git
+	shallow = true
+[submodule "components/idf-extra-components"]
+	path = components/idf-extra-components
+	url = https://github.com/espressif/idf-extra-components.git
+	shallow = true

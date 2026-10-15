@@ -11,59 +11,76 @@ A short video tutorial on how to build a custom firmware version ([YouTube mirro
 
 ## Compiling the source code
 
-1. Install [Arduino CLI](https://arduino.github.io/arduino-cli/1.2/installation/).
+The firmware is built with [ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/v6.0.2/esp32s3/get-started/) v6.0.2 and CMake. The libraries are git submodules. Do not clone them recursively: `esp-protocols` and `idf-extra-components` contain dozens of nested submodules that the build does not need. Run `make submodules` after cloning, or the two commands it consists of:
+
+```shell
+git submodule update --init
+git submodule update --init --recursive components/esp_littlefs
+```
+
+1. [Install ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/v6.0.2/esp32s3/get-started/index.html#installation) v6.0.2 and activate it in your shell (`. $IDF_PATH/export.sh`)
 2. Go to the repository root folder
 3. Compile and flash the firmware
 
 ```shell
-arduino-cli compile --clean -e -p COM_PORT -u ats-mini
+idf.py -B build/ospi -D SDKCONFIG=build/ospi/sdkconfig -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.ospi" -D IDF_TARGET=esp32s3 -p COM_PORT flash
 ```
 
-When a library gets upgraded in the `sketch.yaml` project configuration file, it might be necessary to run the following commands to ensure that the Arduino CLI has the most current information about available platforms and libraries:
+The hardware variant is selected by the second file in `SDKCONFIG_DEFAULTS`:
 
-```shell
-arduino-cli core update-index
-arduino-cli lib update-index
-```
+* `sdkconfig.ospi` - ATS Mini with octal PSRAM
+* `sdkconfig.qspi` - ATS Mini with quad PSRAM
+* `sdkconfig.lilygo` - [LILYGO T-Embed SI4732](hardware.md#lilygo-t-embed-si4732)
+
+The firmware images are in the `build/<variant>` folder.
+
+## Libraries
+
+The libraries live in the `components` folder as git submodules:
+
+* [LovyanGFX](https://github.com/lovyan03/LovyanGFX) - graphics and the display driver
+* [esp_littlefs](https://github.com/joltwallet/esp_littlefs) - LittleFS file system
+* [esp-protocols](https://github.com/espressif/esp-protocols) - mDNS
+* [idf-extra-components](https://github.com/espressif/idf-extra-components) - QR code generator
+
+The SI4732 driver (`components/si473x`) is part of the repository.
 
 ## Compile-time options
 
-The available options are:
+The options are in the `ATS-Neo` menu of `idf.py menuconfig`. The available options are:
 
-* `HALF_STEP` - enable encoder half-steps (useful for EC11E encoder)
-* `LILYGO_SI473X` - compile for [LILYGO T-Embed SI4732](hardware.md#lilygo-t-embed-si4732) hardware variant
-* `BLE_POWER_LEVEL` - Bluetooth LE TX power level (default: `ESP_PWR_LVL_N0`). Possible values are `ESP_PWR_LVL_N24`, `ESP_PWR_LVL_N21`, `ESP_PWR_LVL_N18`, `ESP_PWR_LVL_N15`, `ESP_PWR_LVL_N12`, `ESP_PWR_LVL_N9`, `ESP_PWR_LVL_N6`, `ESP_PWR_LVL_N3`, `ESP_PWR_LVL_N0`, `ESP_PWR_LVL_P3`, `ESP_PWR_LVL_P6`, `ESP_PWR_LVL_P9`, `ESP_PWR_LVL_P12`, `ESP_PWR_LVL_P15`, `ESP_PWR_LVL_P18`, and `ESP_PWR_LVL_P20`.
-* `WIFI_POWER_LEVEL` - Wi-Fi TX power level (default: `WIFI_POWER_17dBm`). Possible values are `WIFI_POWER_21dBm`, `WIFI_POWER_20_5dBm`, `WIFI_POWER_20dBm`, `WIFI_POWER_19_5dBm`, `WIFI_POWER_19dBm`, `WIFI_POWER_18_5dBm`, `WIFI_POWER_17dBm`, `WIFI_POWER_15dBm`, `WIFI_POWER_13dBm`, `WIFI_POWER_11dBm`, `WIFI_POWER_8_5dBm`, `WIFI_POWER_7dBm`, `WIFI_POWER_5dBm`, `WIFI_POWER_2dBm`, and `WIFI_POWER_MINUS_1dBm`.
+* `ATS_HALF_STEP` - enable encoder half-steps (useful for EC11E encoder)
+* `ATS_FPS_COUNTER` - show the FPS counter
+* `ATS_BLE_TX_POWER_DBM` - Bluetooth LE TX power level in dBm (default: `0`). Possible values are `-24`, `-21`, `-18`, `-15`, `-12`, `-9`, `-6`, `-3`, `0`, `3`, `6`, `9`, `12`, `15`, `18`, and `20`.
+* `ATS_WIFI_TX_POWER_QDBM` - Wi-Fi TX power level in units of 0.25 dBm (default: `68`, that is 17 dBm). For example `52` is 13 dBm and `74` is 18.5 dBm.
 
-To set an option, add the `--build-property` command line argument like this:
+The hardware variant (`ATS_BOARD_*`) is chosen by the `sdkconfig.<variant>` file.
 
-```shell
-arduino-cli compile --build-property "compiler.cpp.extra_flags=-DHALF_STEP" --clean -e -p COM_PORT -u ats-mini
+To set an option without the menu, put it into a file named `sdkconfig.local` and add it to the end of the `SDKCONFIG_DEFAULTS` list. For example, to enable the encoder half-steps and lower the Bluetooth LE and Wi-Fi TX power, create `sdkconfig.local` with the following content:
+
+```
+CONFIG_ATS_HALF_STEP=y
+CONFIG_ATS_BLE_TX_POWER_DBM=-12
+CONFIG_ATS_WIFI_TX_POWER_QDBM=52
 ```
 
-For example, to lower Bluetooth LE and Wi-Fi TX power:
+and build with:
 
 ```shell
-arduino-cli compile --build-property "compiler.cpp.extra_flags=-DBLE_POWER_LEVEL=ESP_PWR_LVL_N12 -DWIFI_POWER_LEVEL=WIFI_POWER_13dBm" --clean -e -p COM_PORT -u ats-mini
+idf.py -B build/ospi -D SDKCONFIG=build/ospi/sdkconfig -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.ospi;sdkconfig.local" -D IDF_TARGET=esp32s3 -p COM_PORT flash
 ```
 
 ## Using the make command
 
-You can do all of the above using the `make` command as well:
+You can do all of the above using the `make` command as well. It picks up `sdkconfig.local` automatically:
 
 ```shell
-HALF_STEP=1 PORT=/dev/tty.usbmodem14401 make upload
-```
-
-To set Bluetooth LE and Wi-Fi TX power with `make`:
-
-```shell
-BLE_POWER_LEVEL=ESP_PWR_LVL_N12 WIFI_POWER_LEVEL=WIFI_POWER_13dBm PORT=/dev/tty.usbmodem14401 make upload
+VARIANT=ospi PORT=/dev/tty.usbmodem14401 make upload
 ```
 
 ## Decoding stack traces
 
-To decode a stack trace (printed via serial port) use the following tool: <https://esphome.github.io/esp-stacktrace-decoder/>
+To decode a stack trace (printed via serial port) use `idf.py monitor`, or the following tool: <https://esphome.github.io/esp-stacktrace-decoder/>
 
 ## Enabling the pre-commit hooks
 
@@ -108,11 +125,11 @@ To preview the theme, paste it to the serial console with the <kbd>^</kbd> chara
 ^x0000xFFFFxD69AxF800xD69Ax07E0xF800xF800xFFFFxFFFFx07E0xF800x001FxFFE0xD69AxD69AxD69Ax0000xD69AxD69AxF800xBEDFx0000xF800xFFFFxBEDFx105BxBEDFxBEDFxFFFFxD69AxF800xFFE0xD69AxFFFFxF800xC638
 ```
 
-Once you are happy, add the resulting colors to `Theme.cpp`.
+Once you are happy, add the resulting colors to `main/Themes.cpp`.
 
 ## Release process
 
-1. Bump the `VER_APP` constant in the `Common.h` file
+1. Bump the `VER_APP` constant in the `main/Common.h` file
 2. If the new version has a different preferences layout, bump `VER_SETTINGS`, `VER_BANDS`, `VER_MEMORIES`, or `VER_STORAGE` as well (it will force the corresponding preferences section reset)
 3. Generate the CHANGELOG.md by running `uv run towncrier build --version X.XX`
 4. Add and commit the changes with a message like "Release X.XX", then push them to the repository

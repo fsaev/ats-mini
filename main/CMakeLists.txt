@@ -1,0 +1,63 @@
+idf_component_register(
+    SRCS
+        "ats-neo.cpp"
+        "About.cpp"
+        "Battery.cpp"
+        "BleCentral.cpp"
+        "BleHidCentral.cpp"
+        "BleMode.cpp"
+        "BlePeripheral.cpp"
+        "BleStack.cpp"
+        "BleUartPeripheral.cpp"
+        "Button.cpp"
+        "ByteStream.cpp"
+        "Display.cpp"
+        "Draw.cpp"
+        "EIBI.cpp"
+        "Layout-Default.cpp"
+        "Layout-SMeter.cpp"
+        "Menu.cpp"
+        "Network.cpp"
+        "Remote.cpp"
+        "Rotary.cpp"
+        "Scan.cpp"
+        "SmoothGfx.cpp"
+        "Station.cpp"
+        "Storage.cpp"
+        "Themes.cpp"
+        "UsbSerial.cpp"
+        "Utils.cpp"
+    INCLUDE_DIRS "."
+    REQUIRES
+        LovyanGFX
+        si473x
+        esp_littlefs
+        mdns
+        qrcode
+        bt
+        nvs_flash
+        esp_wifi
+        esp_netif
+        esp_event
+        esp_http_server
+        esp_http_client
+        esp-tls
+        esp_driver_gpio
+        esp_driver_ledc
+        esp_driver_usb_serial_jtag
+        esp_adc
+        esp_pm
+        esp_psram
+        esp_timer
+        esp_ringbuf
+        esp_hw_support
+        esp_partition
+        app_update
+        bootloader_support
+        spi_flash
+        lwip
+        vfs
+        heap
+)
+
+target_compile_options(${COMPONENT_LIB} PRIVATE -Wall -Wextra)

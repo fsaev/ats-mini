@@ -1,0 +1,53 @@
+menu "ATS-Neo"
+
+    choice ATS_BOARD
+        prompt "Hardware variant"
+        default ATS_BOARD_ATS_MINI
+        help
+            Select the receiver hardware the firmware is built for.
+
+        config ATS_BOARD_ATS_MINI
+            bool "ATS Mini (8-bit parallel ST7789 display)"
+
+        config ATS_BOARD_LILYGO_T_EMBED
+            bool "LILYGO T-Embed SI4732 (SPI ST7789 display)"
+            help
+                WARNING: flashing this firmware to a different receiver can damage it.
+    endchoice
+
+    config ATS_HALF_STEP
+        bool "Enable encoder half-steps"
+        default n
+        help
+            Useful for EC11E encoders.
+
+    config ATS_FPS_COUNTER
+        bool "Show FPS counter"
+        default n
+        help
+            Redraw the screen continuously and show the achieved frame rate.
+
+    config ATS_BLE_TX_POWER_DBM
+        int "Bluetooth LE TX power (dBm)"
+        default 0
+        help
+            Supported values are -24, -21, -18, -15, -12, -9, -6, -3, 0, 3, 6, 9, 12, 15, 18 and 20.
+            The nearest supported level not exceeding the value is used.
+
+    config ATS_BLE_DISABLE_CONTROLLER_WHEN_IDLE
+        bool "Switch the Bluetooth controller off when BLE is disabled"
+        default y
+        help
+            Saves power while BLE is off. The controller has to be switched on again
+            when BLE is enabled later. If that turns out to be unreliable, disable
+            this option to keep the controller running.
+
+    config ATS_WIFI_TX_POWER_QDBM
+        int "Wi-Fi TX power (units of 0.25 dBm)"
+        range -4 84
+        default 68
+        help
+            The default of 68 is 17 dBm. Passed to esp_wifi_set_max_tx_power(),
+            the hardware rounds it to a supported level (for example 74 is 18.5 dBm).
+
+endmenu
