@@ -5,7 +5,12 @@ on:
     branches:
       - main
     paths:
-      - 'ats-mini/**'
+      - 'main/**'
+      - 'components/**'
+      - 'CMakeLists.txt'
+      - 'main/Kconfig.projbuild'
+      - 'partitions.csv'
+      - 'sdkconfig.*'
       - 'changelog/**'
       - 'CHANGELOG.md'
       - '.github/workflows/build.yml'
@@ -16,7 +21,12 @@ on:
     # branches:
     #   - main
     paths:
-      - 'ats-mini/**'
+      - 'main/**'
+      - 'components/**'
+      - 'CMakeLists.txt'
+      - 'main/Kconfig.projbuild'
+      - 'partitions.csv'
+      - 'sdkconfig.*'
       - 'changelog/**'
       - 'CHANGELOG.md'
       - '.github/workflows/build.yml'
@@ -37,32 +47,11 @@ jobs:
       fail-fast: true
       matrix:
         board:
-          - profile: esp32s3-ospi
-            # If you change this line, change it in sketch.yaml as well
-            fqbn: esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=8M,PSRAM=opi,CPUFreq=80,USBMode=hwcdc,FlashMode=qio,PartitionScheme=custom,DebugLevel=none
-            artifact-suffix: ospi
-            cli-compile-flags: |
-              - --profile
-              - esp32s3-ospi
-              - --export-binaries
-          - profile: esp32s3-qspi
-            # If you change this line, change it in sketch.yaml as well
-            fqbn: esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=8M,PSRAM=enabled,CPUFreq=80,USBMode=hwcdc,FlashMode=qio,PartitionScheme=custom,DebugLevel=none
-            artifact-suffix: qspi
-            cli-compile-flags: |
-              - --profile
-              - esp32s3-qspi
-              - --export-binaries
-          - profile: esp32s3-ospi
-            # If you change this line, change it in sketch.yaml as well
-            fqbn: esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=8M,PSRAM=opi,CPUFreq=80,USBMode=hwcdc,FlashMode=qio,PartitionScheme=custom,DebugLevel=none
-            artifact-suffix: lilygo-t-embed
-            cli-compile-flags: |
-              - --profile
-              - esp32s3-ospi
-              - --export-binaries
-              - --build-property
-              - compiler.cpp.extra_flags=-DLILYGO_SI473X
+          - artifact-suffix: ospi
+          - artifact-suffix: qspi
+          - artifact-suffix: lilygo-t-embed
+            # The T-Embed uses the settings of its own sdkconfig.lilygo file
+            defaults-suffix: lilygo
 
     outputs:
       slug: ${{ steps.slug.outputs.slug }}
@@ -73,6 +62,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          submodules: recursive
           ref: "${{ github.event.inputs.revision || github.ref }}"
 
       - name: Get version slug
@@ -81,23 +71,28 @@ jobs:
           echo "slug=$(git describe --tags --match 'v?.??' --always --dirty || echo v0.00)" >> "$GITHUB_OUTPUT"
 
       - name: Compile firmware
-        uses: arduino/compile-sketches@v1
+        uses: espressif/esp-idf-ci-action@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          sketch-paths: |
-            - ats-mini
-          fqbn: ${{ matrix.board.fqbn }}
-          cli-compile-flags: ${{ matrix.board.cli-compile-flags }}
-          # Disabled to prevent building artifact for a previous commit
-          enable-deltas-report: false
-          enable-warnings-report: true
+          esp_idf_version: v6.0.2
+          target: esp32s3
+          command: >-
+            idf.py
+            -B build/${{ matrix.board.artifact-suffix }}
+            -D SDKCONFIG=build/${{ matrix.board.artifact-suffix }}/sdkconfig
+            -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.${{ matrix.board.defaults-suffix || matrix.board.artifact-suffix }}"
+            build
 
-      - name: Save sketches report artifact
-        uses: actions/upload-artifact@v7
+      - name: Merge the binaries into one image
+        uses: espressif/esp-idf-ci-action@v1
         with:
-          if-no-files-found: error
-          path: sketches-reports
-          name: sketches-report-${{ matrix.board.artifact-suffix }}
+          esp_idf_version: v6.0.2
+          target: esp32s3
+          command: >-
+            idf.py
+            -B build/${{ matrix.board.artifact-suffix }}
+            -D SDKCONFIG=build/${{ matrix.board.artifact-suffix }}/sdkconfig
+            -D "SDKCONFIG_DEFAULTS=sdkconfig.defaults;sdkconfig.${{ matrix.board.defaults-suffix || matrix.board.artifact-suffix }}"
+            merge-bin -o ats-mini.merged.bin
 
       - name: Install uv and python
         uses: astral-sh/setup-uv@v8.1.0
@@ -114,7 +109,12 @@ jobs:
       - name: Prepare compiled artifact
         run: |
           mkdir -p artifact/ats-mini-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}
-          mv ats-mini/build/esp32.esp32.esp32s3/*.ino.bin ats-mini/build/esp32.esp32.esp32s3/*.ino.*.bin artifact/ats-mini-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}/
+          BUILD="build/${{ matrix.board.artifact-suffix }}"
+          DEST="artifact/ats-mini-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}"
+          cp "$BUILD/bootloader/bootloader.bin" "$DEST/ats-mini.bootloader.bin"
+          cp "$BUILD/partition_table/partition-table.bin" "$DEST/ats-mini.partitions.bin"
+          cp "$BUILD/ats-mini.bin" "$DEST/ats-mini.bin"
+          cp "$BUILD/ats-mini.merged.bin" "$DEST/ats-mini.merged.bin"
           cp CHANGELOG.md artifact/ats-mini-${{ steps.slug.outputs.slug }}-${{ matrix.board.artifact-suffix }}/
 
       - name: Upload compiled artifact

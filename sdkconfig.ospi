@@ -1,0 +1,2 @@
+# ATS Mini with octal PSRAM (the default hardware)
+CONFIG_SPIRAM_MODE_OCT=y

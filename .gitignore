@@ -16,3 +16,9 @@ __pycache__/
 
 # Project
 build/
+build*/
+sdkconfig
+sdkconfig.old
+sdkconfig.local
+dependencies.lock
+managed_components/

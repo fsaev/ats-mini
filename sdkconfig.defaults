@@ -1,0 +1,62 @@
+# Common settings for all hardware variants.
+# Variant specific settings are in sdkconfig.<variant>, the build
+# instructions are in docs/source/development.md.
+
+# Target and flash
+CONFIG_IDF_TARGET="esp32s3"
+CONFIG_ESPTOOLPY_FLASHSIZE_8MB=y
+CONFIG_ESPTOOLPY_FLASHMODE_QIO=y
+CONFIG_PARTITION_TABLE_CUSTOM=y
+CONFIG_PARTITION_TABLE_CUSTOM_FILENAME="partitions.csv"
+CONFIG_PARTITION_TABLE_FILENAME="partitions.csv"
+
+# Compiler
+CONFIG_COMPILER_OPTIMIZATION_SIZE=y
+CONFIG_COMPILER_CXX_EXCEPTIONS=n
+
+# One tick is one millisecond, as the firmware timing assumes
+CONFIG_FREERTOS_HZ=1000
+CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
+CONFIG_ESP_MAIN_TASK_AFFINITY_CPU1=y
+
+# The UI loop keeps the CPU busy while the user is active and never lets
+# the idle task run, so do not watch it
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=n
+CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU1=n
+
+# CPU runs at 240 MHz while the user is active and 80 MHz otherwise,
+# see the activity handling in the main loop
+CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240=y
+CONFIG_PM_ENABLE=y
+
+# USB Serial/JTAG is both the console and the remote control port.
+# Keep the console quiet, otherwise logs corrupt the remote protocol.
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+CONFIG_BOOTLOADER_LOG_LEVEL_NONE=y
+CONFIG_LOG_DEFAULT_LEVEL_NONE=y
+
+# Crash dumps go to the coredump partition
+CONFIG_ESP_COREDUMP_ENABLE_TO_FLASH=y
+
+# External RAM holds the frame buffer and the schedule data
+CONFIG_SPIRAM=y
+# Octal PSRAM unless a variant file says otherwise
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+CONFIG_SPIRAM_USE_MALLOC=y
+CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=16384
+
+# Run without external RAM and report it on the display, instead of failing at boot
+CONFIG_SPIRAM_IGNORE_NOTFOUND=y
+
+# Do not wait a random time before the first SNTP request
+CONFIG_LWIP_SNTP_STARTUP_DELAY=n
+
+# Bluetooth LE: NimBLE host. Bonds must survive a reboot, and NimBLE logs must
+# not corrupt the remote control protocol.
+CONFIG_BT_ENABLED=y
+CONFIG_BT_NIMBLE_ENABLED=y
+CONFIG_BT_NIMBLE_NVS_PERSIST=y
+CONFIG_BT_NIMBLE_MAX_BONDS=3
+CONFIG_BT_NIMBLE_MAX_CONNECTIONS=1
+CONFIG_BT_NIMBLE_LOG_LEVEL_NONE=y

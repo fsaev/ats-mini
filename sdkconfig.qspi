@@ -1,0 +1,2 @@
+# ATS Mini with quad PSRAM
+CONFIG_SPIRAM_MODE_QUAD=y
