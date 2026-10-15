@@ -27,7 +27,17 @@ endif
 
 all: build
 
+# Fetch the libraries. Not recursive on purpose: esp-protocols and
+# idf-extra-components have many nested submodules that are not needed.
+submodules:
+	git submodule update --init
+	git submodule update --init --recursive components/esp_littlefs
+
 help:
+	@echo 'Fetch the libraries (once, after cloning):'
+	@echo
+	@echo '  make submodules'
+	@echo
 	@echo 'Build the firmware:'
 	@echo
 	@echo '  make build [VARIANT=ospi|qspi|lilygo]'
@@ -52,4 +62,4 @@ menuconfig:
 clean:
 	rm -Rf $(BUILD)
 
-.PHONY: all help build upload monitor menuconfig clean
+.PHONY: all help submodules build upload monitor menuconfig clean

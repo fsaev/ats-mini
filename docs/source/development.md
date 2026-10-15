@@ -11,10 +11,11 @@ A short video tutorial on how to build a custom firmware version ([YouTube mirro
 
 ## Compiling the source code
 
-The firmware is built with [ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/v6.0.2/esp32s3/get-started/) v6.0.2 and CMake. The libraries are git submodules, so clone the repository recursively (or run `git submodule update --init --recursive` in an existing clone):
+The firmware is built with [ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/v6.0.2/esp32s3/get-started/) v6.0.2 and CMake. The libraries are git submodules. Do not clone them recursively: `esp-protocols` and `idf-extra-components` contain dozens of nested submodules that the build does not need. Run `make submodules` after cloning, or the two commands it consists of:
 
 ```shell
-git clone --recursive https://github.com/esp32-si4732/ats-mini.git
+git submodule update --init
+git submodule update --init --recursive components/esp_littlefs
 ```
 
 1. [Install ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/v6.0.2/esp32s3/get-started/index.html#installation) v6.0.2 and activate it in your shell (`. $IDF_PATH/export.sh`)

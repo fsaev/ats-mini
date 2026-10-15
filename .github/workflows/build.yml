@@ -62,8 +62,13 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          submodules: recursive
+          # Not recursive: idf-extra-components and esp-protocols contain dozens of
+          # nested submodules that are not used. Only the one of esp_littlefs is.
+          submodules: true
           ref: "${{ github.event.inputs.revision || github.ref }}"
+
+      - name: Fetch the esp_littlefs submodule
+        run: git submodule update --init --recursive components/esp_littlefs
 
       - name: Get version slug
         id: slug
